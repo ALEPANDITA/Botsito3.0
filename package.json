@@ -1,6 +1,6 @@
 {
   "name": "yukiwabot",
-  "version": "3.0",
+  "version": "3.2",
   "description": "WhatsApp multi Device, updated with better performance",
   "main": "index.js",
   "type": "module",
