@@ -22,7 +22,7 @@ function getClient(client) {
   return global.conns?.find((c) => c?.user?.id?.split(':')[0] === userId) || client;
 }
 
-export function normalizePhone(input) {
+function normalizePhone(input) {
   let s = String(input).replace(/\D/g, '');
   if (!s) return '';
   if (s.startsWith('0')) s = s.replace(/^0+/, '');
@@ -45,7 +45,7 @@ export async function startSubBot(msg, client, caption = '', isCode = false, pho
     version,
     logger: pino({ level: 'silent' }),
     printQRInTerminal: false,
-    browser: Browsers.ubuntu('Chrome'),
+    browser: Browsers.windows('Chrome'),
     auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })) },
     shouldIgnoreJid: (jid) => jid.endsWith('@broadcast'),
     markOnlineOnConnect: true,
