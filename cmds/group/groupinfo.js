@@ -1,5 +1,6 @@
 import ws from 'ws';
 import fs from 'fs';
+import db from '#db';
 
 export default {
   command: ['gp', 'groupinfo'],
@@ -11,14 +12,14 @@ export default {
     const groupCreator = groupMetadata?.owner ? '@' + groupMetadata.owner.split('@')[0] : 'Desconocido';
     const groupAdmins = participants.filter(p => (p.admin === 'admin' || p.admin === 'superadmin')) || [];
     const totalParticipants = participants.length;
-    const chat = global.db.data.chats[msg.chat] || {};
-    const allChatUsers = Object.values(global.db.data.chats[msg.chat]?.users || {});
+    const chat = db.getChat(msg.chat) || {};
+    const allChatUsers = db.getChatUser(msg.chat);
     const usersMap = {};
     for (const user of allChatUsers) {
       usersMap[user.user_id] = user;
     }
     const botId = sock.user.id.split(':')[0] + "@s.whatsapp.net";
-    const botSettings = global.db.data.settings[botId] || {};
+    const botSettings = db.getSettings(botId) || {};
     const botname = botSettings.botname;
     const monedas = botSettings.currency;
     let totalCoins = 0;

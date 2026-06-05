@@ -1,3 +1,4 @@
+import db from '#db';
 export default {
   command: ['setgoodbye'],
   category: 'group',
@@ -5,7 +6,7 @@ export default {
   isAdmin: true,
   run: async ({ msg, args, usedPrefix, command }) => {
     const chatId = msg.chat;
-    let chat = global.db.data.chats[chatId];
+    let chat = db.getChat(chatId);
     if (!args.length) {
       return msg.reply(`ꕤ ꨩᰰ𑪐𑂺 ˳ ׄ Set Bye ࣭𑁯ᰍ   ̊ ܃܃
 
@@ -32,12 +33,12 @@ export default {
         return msg.reply('✎ No tienes ningún mensaje de despedida definido.');
       }
       chat.sGoodbye = '';
-      global.db.data.chats[chatId].sGoodbye = '';
+      db.setChat(chatId, 'sGoodbye', '');
       return msg.reply('✐ Mensaje de despedida eliminado.');
     }
     const texto = args.join(' ');
     chat.sGoodbye = texto;
-    global.db.data.chats[chatId].sGoodbye = texto;
+    db.setChat(chatId, 'sGoodbye', texto);
     msg.reply(`ꕥ Has establecido el mensaje de despedida correctamente.`);
   }
 };

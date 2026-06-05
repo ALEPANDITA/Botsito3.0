@@ -1,3 +1,4 @@
+import db from '#db';
 export default {
   command: ['count', 'mensajes', 'messages', 'msgcount'],
   category: 'group',
@@ -5,7 +6,7 @@ export default {
   run: async ({ msg, sock, args }) => {
     const chatId = msg.chat;
     const who = msg.mentionedJid?.[0] || msg.quoted?.sender || msg.sender;
-    let user = global.db.data.chats[chatId]?.users?.[who];
+    let user = db.getChatUser(chatId, who);
     if (!user) {
       return msg.reply(`「✎」 El usuario mencionado no está registrado en el bot.`);
     }    

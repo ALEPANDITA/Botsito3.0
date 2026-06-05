@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import db from '#db';
 
 const getBotsFromFolder = (folderName, __dirname) => {
   const basePath = path.join(__dirname, '../../Sessions', folderName)
@@ -19,13 +20,13 @@ export default {
   isAdmin: true,
   run: async ({ msg, sock, usedPrefix, command, groupMetadata, participants, __dirname }) => {
     try {
-      let chat = global.db.data.chats[msg.chat];
+      let chat = db.getChat(msg.chat);
       const who = msg.mentionedJid?.[0] || msg.quoted?.sender || null;
       if (!who) {
         return sock.reply(msg.chat, `《✧》 Por favor menciona un bot para convertirlo en primario.`, msg);
       }
       const groupParticipants = participants.map(p => p.id);
-      const mainBotJid = (global.sock.user.id.split(':')[0] + '@s.whatsapp.net');
+      const mainBotJid = ((global.sock?.user?.id?.split(':')[0] ?? null) && ((global.sock?.user?.id?.split(':')[0] ?? null) && (global.sock.user.id.split(':')[0] + '@s.whatsapp.net')));
       const allowedBots = getAllowedBots(mainBotJid, __dirname);
       if (!allowedBots.includes(who)) {
         return sock.reply(msg.chat, `《✧》 El usuario mencionado no es una instancia de Sub-Bot.`, msg);
@@ -37,7 +38,7 @@ export default {
         return sock.reply(msg.chat, `「✿」 @${who.split('@')[0]} ya es el Bot principal del Grupo.`, msg, { mentions: [who] });
       }
       chat.primaryBot = who;
-      global.db.data.chats[msg.chat].primaryBot = who;
+      db.setChat(msg.chat, 'primaryBot', who);
       await sock.reply(msg.chat, `ꕥ Se ha establecido a @${who.split('@')[0]} como bot primario de este grupo.\n> Ahora todos los comandos de este grupo serán ejecutados por @${who.split('@')[0]}.`, msg, { mentions: [who] });
     } catch (e) {
       console.error(e);

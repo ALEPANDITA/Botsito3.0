@@ -1,3 +1,4 @@
+import db from '#db';
 export default {
   command: ['warns'],
   category: 'group',
@@ -8,8 +9,8 @@ export default {
     if (!userId) {
       return msg.reply('《✧》 Menciona o responde a un usuario válido para ver sus advertencias.');
     }
-    (global.db.data.chats[msg.chat]?.users?.[userId] && (global.db.data.chats[msg.chat].users[userId].warnings ??= []));
-    let user = global.db.data.chats[msg.chat]?.users?.[userId];
+    db.setCreate('chat_users', [msg.chat, userId], 'warnings', []);
+    let user = db.getChatUser(msg.chat, userId);
     let warnings = user.warnings;
     if (typeof warnings === 'string') {
       try { warnings = JSON.parse(warnings); } catch { warnings = []; }
@@ -18,7 +19,7 @@ export default {
     if (total === 0) {
       return sock.reply(msg.chat, `《✧》 @${userId.split('@')[0]} no tiene advertencias registradas.`, msg, { mentions: [userId] });
     }
-    const userGlobal = global.db.data.users[userId];
+    const userGlobal = db.getUser(userId);
     const name = userGlobal?.name || 'Usuario';
     const warningList = warnings.map((w, i) => {
       const index = total - i;

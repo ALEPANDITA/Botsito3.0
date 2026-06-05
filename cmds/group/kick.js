@@ -1,3 +1,4 @@
+import db from '#db';
 export default {
   command: ['kick', 'ban', 'bang'],
   category: 'group',
@@ -51,7 +52,7 @@ export default {
       return msg.reply(res);
     }
     if (args[0] === 'inactive' || args[0] === 'listinactive') {
-      const allChatUsers = Object.values(global.db.data.chats[msg.chat]?.users || {});
+      const allChatUsers = db.getChatUser(msg.chat);
       const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       let sider = [];
       for (const participant of participants) {

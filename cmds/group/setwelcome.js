@@ -1,3 +1,4 @@
+import db from '#db';
 export default {
   command: ['setwelcome'],
   category: 'group',
@@ -5,7 +6,7 @@ export default {
   isAdmin: true,
   run: async ({ msg, args, usedPrefix, command }) => {
     const chatId = msg.chat;
-    let chat = global.db.data.chats[chatId];
+    let chat = db.getChat(chatId);
     if (!args.length) {
       return msg.reply(`ꕤ ꨩᰰ𑪐𑂺 ˳ ׄ Set Welcome ࣭𑁯ᰍ   ̊ ܃܃
 
@@ -32,12 +33,12 @@ export default {
         return msg.reply('✎ No tienes ningún mensaje de bienvenida definido.');
       }
       chat.sWelcome = '';
-      global.db.data.chats[chatId].sWelcome = '';
+      db.setChat(chatId, 'sWelcome', '');
       return msg.reply('✐ Mensaje de bienvenida eliminado.');
     }
     const texto = args.join(' ');
     chat.sWelcome = texto;
-    global.db.data.chats[chatId].sWelcome = texto;
+    db.setChat(chatId, 'sWelcome', texto);
     msg.reply(`ꕥ Has establecido el mensaje de bienvenida correctamente.`);
   }
 };

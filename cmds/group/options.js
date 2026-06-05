@@ -1,12 +1,13 @@
+import db from '#db';
 export default {
   command: ['welcome', 'bienvenida', 'goodbye', 'despedida', 'alerts', 'alertas', 'nsfw', 'antilink', 'antienlaces', 'antilinks', 'antistatus', 'antiestados', 'rpg', 'economy', 'economia', 'gacha', 'adminonly', 'onlyadmin'],
   category: 'group',
   description: 'Configurar opciones del grupo.',
   isAdmin: true,
   run: async ({ msg, sock, args, usedPrefix, command }) => {
-    let chatData = global.db.data.chats[msg.chat];
+    let chatData = db.getChat(msg.chat);
     const botId = sock.user.id.split(':')[0] + "@s.whatsapp.net";
-    const botSettings = global.db.data.settings[botId] || {};
+    const botSettings = db.getSettings(botId) || {};
     const botname = botSettings.botname || 'Bot';
     const stateArg = args[0]?.toLowerCase();
     const validStates = ['on', 'off', 'enable', 'disable'];
@@ -77,7 +78,7 @@ export default {
     if ((chatData[normalizedKey] === 1 && enabled) || (chatData[normalizedKey] === 0 && !enabled) || (chatData[normalizedKey] === true && enabled) || (chatData[normalizedKey] === false && !enabled)) {
       return msg.reply(`✎ *${titulo}* ya estaba *${enabled ? 'activado' : 'desactivado'}*.`);
     }
-    global.db.data.chats[msg.chat][normalizedKey] = newValue;
-    return msg.reply(`✎ Has *${enabled ? 'activado' : 'desactivado'}* ${nombreBonito}.`);
+    chatData[normalizedKey] = newValue;
+    db.setChat(msg.chat, normalizedKey, newValue);    return msg.reply(`✎ Has *${enabled ? 'activado' : 'desactivado'}* ${nombreBonito}.`);
   }
 };

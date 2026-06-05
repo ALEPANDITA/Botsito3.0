@@ -1,3 +1,4 @@
+import db from '#db';
 const getLastActive = (usedTime) => {
   if (!usedTime) return 0;
   if (typeof usedTime === 'number') return usedTime;
@@ -40,7 +41,7 @@ export default {
   isAdmin: true,
   run: async ({ msg, sock }) => {
     const start = Date.now();
-    const chat = global.db.data.chats[msg.chat];
+    const chat = db.getChat(msg.chat);
     const textLower = (msg.text || '').toLowerCase();
     const isViewMode = textLower.includes('view') || textLower.includes('views');
     const isFullDeleteMode = textLower.includes('full') || textLower.includes('complete');
@@ -54,7 +55,7 @@ export default {
       if (isPrivileged(u.user_id, msg.sender)) continue;
       const lastActive = getLastActive(u.usedTime) || (typeof u.lastCmd === 'number' ? u.lastCmd : 0);
       const delta = now - lastActive;
-      const userData = global.db.data.users[u.user_id];
+      const userData = db.getUser(u.user_id);
       const displayName = userData?.name || u.user_id.split('@')[0];
       let characters = u.characters;
       if (typeof characters === 'string') { try { characters = JSON.parse(characters); } catch { characters = []; } }
@@ -74,34 +75,34 @@ export default {
       mentions.push(u.user_id); waifus += characters.length; dinero += totalCoins;
       if (isDeleteMode && !isViewMode) {
         for (const id of characters) {
-          let character = global.db.data.characters[id];
+          let character = db.getCharacter(id);
           if (character && character.user === u.user_id) {
             delete character.user; delete character.claimedAt;
-            global.db.data.characters[id] = character;
+            db.setCharacter(id, character);
           }
           if (chat.sales && chat.sales[id]?.user === u.user_id) delete chat.sales[id];
           if (u.favorite === id) {
-            global.db.data.chats[msg.chat].users[u.user_id].favorite = '';
-            if (global.db.data.users[u.user_id]) global.db.data.users[u.user_id].favorite = '';
+            db.setChatUser(msg.chat, u.user_id, 'favorite', '');
+            if (db.getUser(u.user_id)) db.setUser(u.user_id, 'favorite', '');
           }
         }
         if (isFullDeleteMode) {
-          delete global.db.data.chats[msg.chat].users[u.user_id];
+          db.deletedb('chatuser', msg.chat, u.user_id);
           deletedUsers.push({ jid: u.user_id, name: displayName });
         } else {
-          global.db.data.chats[msg.chat].users[u.user_id].characters = [];
-          global.db.data.chats[msg.chat].users[u.user_id].coins = 0;
-          global.db.data.chats[msg.chat].users[u.user_id].bank = 0;
+          db.setChatUser(msg.chat, u.user_id, 'characters', []);
+          db.setChatUser(msg.chat, u.user_id, 'coins', 0);
+          db.setChatUser(msg.chat, u.user_id, 'bank', 0);
         }
         eliminados++;
       } else if (!isViewMode) { eliminados++; }
     }
-    if (chat.sales && isDeleteMode && !isViewMode) global.db.data.chats[msg.chat].sales = chat.sales;
+    if (chat.sales && isDeleteMode && !isViewMode) db.setChat(msg.chat, 'sales', chat.sales);
     if (userList.length === 0) {
       return msg.reply(isViewMode ? 'ꕥ No hay usuarios con actividad registrada en este grupo.' : 'ꕥ No se encontraron usuarios inactivos.\n> ⴵ Tiempo limite: 30 dias');
     }
     const botId = sock.user.id.split(':')[0] + '@s.whatsapp.net';
-    const currency = global.db.data.settings[botId]?.currency || '⛁';
+    const currency = db.getSettings(botId)?.currency || '⛁';
     let report = '';
     if (isDeleteMode && !isViewMode) {
       const title = isFullDeleteMode ? '✰ *Delete Users Completos*' : '✰ *Delete Users Inactivos*';

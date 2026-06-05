@@ -1,10 +1,11 @@
+import db from '#db';
 export default {
   command: ['topcount', 'topmensajes', 'topmsgcount', 'topmessages'],
   category: 'group',
   description: 'Ver el top de usuarios con más mensajes en el grupo.',
   run: async ({ msg, sock, args, usedPrefix, text }) => {
     const chatId = msg.chat;
-    const allChatUsers = Object.values(global.db.data.chats[chatId]?.users || {});
+    const allChatUsers = db.getChatUser(chatId);
     const now = new Date();
     const daysArg = args[0] ? parseInt(args[0]) : 1;
     if (daysArg < 1) {
@@ -38,7 +39,7 @@ export default {
     let report = `❀ Top de mensajes en los últimos *${daysArg}* día${daysArg > 1 ? 's' : ''}\n\n`;
     for (let i = 0; i < pageRanking.length; i++) {
       const u = pageRanking[i];
-      const userGlobal = global.db.data.users[u.jid];
+      const userGlobal = db.getUser(u.jid);
       const name = userGlobal?.name || u.jid.split('@')[0];
       report += `*${start + i + 1}.* ${name}\n`;
       report += `   » Mensajes: \`${u.totalMsgs}\`, Comandos: \`${u.totalCmds}\`\n`;
