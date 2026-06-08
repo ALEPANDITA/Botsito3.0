@@ -1,7 +1,7 @@
 import yts from 'yt-search'
 import fetch from 'node-fetch'
-import { spawn } from 'node:child_process'
-import { Readable } from 'node:stream'
+import { spawn } from 'child_process'
+import { Readable } from 'stream'
 
 const cmd = {
   command: ['play', 'mp3', 'ytmp3', 'ytaudio', 'playaudio'],
@@ -39,7 +39,6 @@ const cmd = {
 > ⴵ Duración › *${video_info.timestamp || 'Desconocido'}*
 > ❀ Vistas › *${views}*
 > ✩ Publicado › *${video_info.ago || 'Desconocido'}*
-> ❒ Formato › *MP3*
 > ❒ Enlace › *${url}*`
 
           if (thumbnail) {
