@@ -519,7 +519,7 @@ try {
 export function clearDB() {
   if (!global.cleardb) {
     global.cleardb = true;
-    const INACTIVE_MS = 7 * 86400000;
+    const INACTIVE_MS = 20 * 86400000;
     setInterval(() => {
       const now = Date.now();
       for (const cu of stmt('SELECT chat_id, user_id, usedTime, lastCmd FROM chat_users').all()) {
