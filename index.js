@@ -143,6 +143,7 @@ let reconexion = 0;
 let botReady = false;
 let isRestarting = false;
 const retriesLimit = 15;
+let saveCredsTimer = null;
 async function warmupGroups(sock) {
   try {
     const allChats = db.getChat()
@@ -170,6 +171,10 @@ export async function startBot() {
   bootTime = Date.now();
   const { state, saveCreds } = await useMultiFileAuthState('./Sessions/Owner');
   const { version } = await fetchLatestBaileysVersion();
+  const saveCredsDB = () => {
+    if (saveCredsTimer) clearTimeout(saveCredsTimer);
+    saveCredsTimer = setTimeout(saveCreds, 2000);
+  };
   console.info = () => {};
   console.debug = () => {};
   const sock = makeWASocket({
@@ -187,7 +192,7 @@ export async function startBot() {
   });
 
   global.sock = sock;
-  sock.ev.on("creds.update", saveCreds);
+  sock.ev.on("creds.update", saveCredsDB);
   sock.sendText = (jid, text, quoted = "", options) => sock.sendMessage(jid, { text, ...options }, { quoted });
   sock.decodeJid = (jid) => {
     if (!jid) return jid;
