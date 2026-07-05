@@ -2,7 +2,7 @@ import { watchFile, unwatchFile } from "fs";
 import chalk from "chalk";
 import { fileURLToPath } from "url";
 
-global.owner = ['573196588149', '50498273976'];
+global.owner = ['573223090406', '5217732654942'];
 
 global.dev = "© ⍴᥆ᥕᥱrᥱძ ᑲᥡ ⁱᵃᵐ|𝔇ĕ𝐬†𝓻⊙γ𒆜";
 global.links = {
